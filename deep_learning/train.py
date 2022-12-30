@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 import piexif
 import imghdr
+from main import *
 
 
 class MyDataset(Dataset):
@@ -64,34 +65,22 @@ parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFo
 parser.add_argument('--batch_size', default=16, type=int, help='batchSize')
 parser.add_argument('--lr', default=0.01, type=float, help='')
 parser.add_argument('--gpu', default=0, type=float, help='')
-parser.add_argument('--model', default="Densenet", type=str, help='CNN | AlexNet | ResNet18 | DenseNet')
 parser.add_argument('--epochs', default="501", type=int)
 opt = parser.parse_args(args=[])
 
 batch_size = opt.batch_size
 learning_rate = opt.lr
 num_epoches = opt.epochs
-model_name = opt.model
 
 #训练和测试集预处理
-train_dataset = MyDataset(path=r'data\trainimages', resize=28, Len=2500, img_type='jpg',labelpath='data/train.csv')
-val_dataset = MyDataset(path=r'data\testimages', resize=28, Len=500, img_type='jpg',labelpath='data/data.csv')
+train_dataset = MyDataset(path=r'data/trainimages', resize=28, Len=2500, img_type='jpg',labelpath='data/train.csv')
+val_dataset = MyDataset(path=r'data/valimages', resize=28, Len=500, img_type='jpg',labelpath='data/val.csv')
 #加载数据集
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True)
 
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-model = Densenet(10)
-model = model.to(DEVICE)
-if model_name == 'CNN':
-    model = CNN()
-elif model_name == 'AlexNet':
-    model = AlexNet()
-elif model_name == 'ResNet18':
-    model = ResNet18()
-print(model)
-if torch.cuda.is_available():
-    model = model.cuda()
+model_name = 'Densenet'
+model = Densenet()
  
 criterion = nn.BCELoss(weight=None, size_average=None, reduce=None, reduction='mean')
 optimizer = optim.SGD(model.parameters(), lr=learning_rate)

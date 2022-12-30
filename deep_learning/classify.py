@@ -8,7 +8,7 @@ from PIL import Image
 import pandas as pd
 import numpy as np
 import imghdr
-
+from utils import *
 
 class MyDataset(Dataset):
     def __init__(self, path, Train=True, Len=-1, resize=-1, img_type='jpg'):
@@ -46,7 +46,6 @@ parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFo
 parser.add_argument('--batch_size', default=16, type=int, help='batchSize')
 parser.add_argument('--lr', default=0.01, type=float, help='')
 parser.add_argument('--gpu', default=0, type=float, help='')
-parser.add_argument('--model', default="DenseNet", type=str, help='CNN | AlexNet | ResNet18 | DenseNet')
 parser.add_argument('--epochs', default="501", type=int)
 opt = parser.parse_args(args=[])
 
@@ -56,7 +55,6 @@ num_epoches = opt.epochs
 model_name = opt.model
 
 def set_random_seed(seed, deterministic=False):
-    
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
@@ -71,13 +69,12 @@ test_dataset = MyDataset(path=r'data/testimages', resize=224, Len=1084, img_type
 
 #加载数据集
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-model = Densenet(10)
-modelt = model.to(DEVICE)
+
+path= 'model/' + model_name + '_\d*.pth'
+model = torch.load(path)
 print(model)
 if torch.cuda.is_available():
     model = model.cuda()
-
 print('Start test!')
 model.eval()
 
